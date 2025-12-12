@@ -1,0 +1,195 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+class Fractie {
+    private:
+    int numarator;
+    int numitor;
+
+    // 🔹 Metodă privată care simplifică fracția folosind algoritmul lui Euclid
+    void simplifica() {
+        int a = abs(numarator), b = abs(numitor);
+        while (b != 0) {
+            int r = a % b;
+            a = b;
+            b = r;
+        }
+        if (a != 0) {
+            numarator /= a;
+            numitor /= a;
+        }
+        // Dacă numitorul este negativ, mutăm semnul la numărător
+        if (numitor < 0) {
+            numarator = -numarator;
+            numitor = -numitor;
+        }
+    }
+
+    public:
+    // 🔹 Constructor cu parametri (are valori implicite)
+    // Inițializează fracția și verifică dacă numitorul este valid
+    Fractie(int n = 0, int m = 1) {
+        if (m == 0) {
+            cout << "Numitorul nu poate fi 0. Se seteaza la 1.\n";
+            m = 1;
+        }
+        numarator = n;
+        numitor = m;
+        simplifica(); // se simplifică automat la crearea obiectului
+    }
+
+    // 🔹 Getteri pentru accesarea valorilor private
+    int getNumarator() const { return numarator; }
+    int getNumitor() const { return numitor; }
+
+    // 🔹 Supraincarcare operator +
+    // Returnează suma a două fracții
+    Fractie operator+(const Fractie& f) const {
+        return Fractie(numarator * f.numitor + f.numarator * numitor, numitor * f.numitor);
+    }
+
+    // 🔹 Supraincarcare operator -
+    // Returnează diferența a două fracții
+    Fractie operator-(const Fractie& f) const {
+        return Fractie(numarator * f.numitor - f.numarator * numitor, numitor * f.numitor);
+    }
+
+    // 🔹 Supraincarcare operator *
+    // Returnează produsul a două fracții
+    Fractie operator*(const Fractie& f) const {
+        return Fractie(numarator * f.numarator, numitor * f.numitor);
+    }
+
+    // 🔹 Supraincarcare operator /
+    // Returnează rezultatul împărțirii a două fracții
+    Fractie operator/(const Fractie& f) const {
+        if (f.numarator == 0) {
+            cout << "Impartire la zero! Rezultat setat la 0/1.\n";
+            return Fractie(0, 1);
+        }
+        return Fractie(numarator * f.numitor, numitor * f.numarator);
+    }
+
+    // 🔹 Operator de comparare ==
+    // Verifică dacă două fracții sunt egale
+    bool operator==(const Fractie& f) const {
+        return numarator == f.numarator && numitor == f.numitor;
+    }
+
+    // 🔹 Operator de comparare !=
+    // Verifică dacă două fracții sunt diferite
+    bool operator!=(const Fractie& f) const {
+        return !(*this == f);
+    }
+    // 🔹 Operator <
+    // Compară valorile fracțiilor ca numere reale
+    bool operator<(const Fractie& f) const {
+        return (double)(*this) < (double)f;
+    }
+    // 🔹 Operator >
+    bool operator>(const Fractie& f) const {
+        return (double)(*this) > (double)f;
+    }
+    // 🔹 Operator <=
+    bool operator<=(const Fractie& f) const {
+        return !(*this > f);
+    }
+    // 🔹 Operator >=
+    bool operator>=(const Fractie& f) const {
+        return !(*this < f);
+    }
+    // 🔹 Operator +=
+    // Adaugă o altă fracție la cea curentă și returnează referința către obiectul modificat
+    Fractie& operator+=(const Fractie& f) {
+        *this = *this + f;
+        return *this;
+    }
+    // 🔹 Operator de conversie la tipul double
+    // Permite transformarea unei fracții în valoare reală (ex: (double)f)
+    operator double() const {
+        return (double)numarator / numitor;
+    }
+    // 🔹 Funcție prietenă pentru citirea unei fracții de la tastatură
+    // Supraincarcă operatorul >>
+    friend istream& operator>>(istream& in, Fractie& f) {
+        cout << "Introdu numaratorul: ";
+        in >> f.numarator;
+        cout << "Introdu numitorul: ";
+        in >> f.numitor;
+        if (f.numitor == 0) {
+            cout << "Numitor invalid, setat la 1.\n";
+            f.numitor = 1;
+        }
+        f.simplifica();
+        return in;
+    }
+    // 🔹 Funcție prietenă pentru afișarea unei fracții
+    // Supraincarcă operatorul <<
+    friend ostream& operator<<(ostream& out, const Fractie& f) {
+        out << f.numarator << "/" << f.numitor;
+        return out;
+    }
+};
+// 🔹 Funcție de meniu pentru interacțiunea cu utilizatorul
+void meniu() {
+    Fractie f1, f2, rezultat;
+    int optiune;
+    cout << "Introdu prima fractie:\n";
+    cin >> f1;
+    cout << "\nIntrodu a doua fractie:\n";
+    cin >> f2;
+    cout << "\nAlege operatia:\n";
+    cout << "1. Adunare\n";
+    cout << "2. Scadere\n";
+    cout << "3. Inmultire\n";
+    cout << "4. Impartire\n";
+    cout << "5. Comparare (>)\n";
+    cout << "6. Comparare (<)\n";
+    cout << "7. Egalitate (==)\n";
+    cout << "8. Diferenta (!=)\n";
+    cout << "Optiunea ta: ";
+    cin >> optiune;
+    switch (optiune) {
+        case 1:
+            rezultat = f1 + f2;
+            cout << "\nRezultat adunare: " << rezultat << endl;
+            break;
+        case 2:
+            rezultat = f1 - f2;
+            cout << "\nRezultat scadere: " << rezultat << endl;
+            break;
+        case 3:
+            rezultat = f1 * f2;
+            cout << "\nRezultat inmultire: " << rezultat << endl;
+            break;
+        case 4:
+            rezultat = f1 / f2;
+            cout << "\nRezultat impartire: " << rezultat << endl;
+            break;
+        case 5:
+            cout << "\nRezultat comparare: "
+                    << (f1 > f2 ? "Prima fractie este mai mare" : "A doua fractie este mai mare sau egala") << endl;
+            break;
+        case 6:
+            cout << "\nRezultat comparare: "
+                    << (f1 < f2 ? "Prima fractie este mai mica" : "A doua fractie este mai mica sau egala") << endl;
+            break;
+        case 7:
+            cout << "\nEgalitate: " << (f1 == f2 ? "Fractiile sunt egale" : "Fractiile nu sunt egale") << endl;
+            break;
+        case 8:
+            cout << "\nDiferenta: " << (f1 != f2 ? "Fractiile sunt diferite" : "Fractiile sunt identice") << endl;
+            break;
+        default:
+            cout << "Optiune invalida.\n";
+            break;
+    }
+    if (optiune >= 1 && optiune <= 4)
+        cout << "\nValoare reala a rezultatului: " << (double)rezultat << endl;
+}
+// 🔹 Funcția principală
+int main() {
+    meniu();
+    return 0;
+}
